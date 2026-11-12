@@ -30,13 +30,17 @@ button:hover{background:rgba(255,255,255,.25)}#playBtn{background:linear-gradien
 <a class="social" href="https://discord.gg/9fq2nVDeW" target="_blank" rel="noopener"><div class="icon-container"><img class="social-avatar" src="discord-avatar.jpg?v=3" alt="Ảnh đại diện Discord"></div><div><span>Discord Heavy Weight</span></div></a>
 </section>
 <section class="music"><div class="music-title">🎵 Nhạc nền: Xương Rồng</div><div class="controls"><button id="playBtn">▶ Phát nhạc</button><button id="muteBtn">🔊</button><input id="volume" class="volume" type="range" min="0" max="1" step=".01" value=".55"></div></section></div>
-<audio id="audio" src="xuongrong.mp3" loop preload="auto"></audio>
+<audio id="audio" src="xuongrong.mp3" loop preload="auto" autoplay playsinline></audio>
 <script>
 const audio=document.getElementById("audio"),playBtn=document.getElementById("playBtn"),muteBtn=document.getElementById("muteBtn"),volume=document.getElementById("volume");audio.volume=.55;
 function tryPlay(){audio.play().then(()=>playBtn.textContent="⏸ Tạm dừng").catch(()=>playBtn.textContent="▶ Phát nhạc")}
-window.addEventListener("load",tryPlay);document.addEventListener("click",()=>{if(audio.paused)tryPlay()},{once:true});
-document.addEventListener("visibilitychange",()=>{if(document.hidden)audio.pause();else tryPlay()});
-playBtn.onclick=e=>{e.stopPropagation();if(audio.paused){audio.play();playBtn.textContent="⏸ Tạm dừng"}else{audio.pause();playBtn.textContent="▶ Phát nhạc"}};
+function unlockAudio(){if(audio.paused)tryPlay()}
+document.addEventListener("DOMContentLoaded",tryPlay);
+window.addEventListener("load",tryPlay);
+window.addEventListener("pageshow",tryPlay);
+["pointerdown","keydown","touchstart"].forEach(evt=>document.addEventListener(evt,unlockAudio,{once:true,passive:true}));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)tryPlay()});
+playBtn.onclick=e=>{e.stopPropagation();if(audio.paused){tryPlay()}else{audio.pause();playBtn.textContent="▶ Phát nhạc"}};
 audio.onplay=()=>playBtn.textContent="⏸ Tạm dừng";audio.onpause=()=>playBtn.textContent="▶ Phát nhạc";volume.oninput=()=>audio.volume=volume.value;
 muteBtn.onclick=e=>{e.stopPropagation();audio.muted=!audio.muted;muteBtn.textContent=audio.muted?"🔇":"🔊"};
 </script></body></html>
